@@ -287,10 +287,10 @@ class PlacementStrategy(str, Enum):
     SPREAD = "spread"
 
 
-class _InstanceType:
+class InstanceType:
     """Instance type data."""
 
-    def __init__(self: _InstanceType, data: "InstanceTypeInfoTypeDef") -> None:
+    def __init__(self: InstanceType, data: "InstanceTypeInfoTypeDef") -> None:
         """."""
         self.name = data.get("InstanceType", "t1.micro")
         self.is_current = data.get("CurrentGeneration", True)
@@ -468,12 +468,12 @@ class _InstanceType:
 
 def get_instance_types(
     session: Session, region_name: str
-) -> list[_InstanceType]:
+) -> list[InstanceType]:
     """."""
     ec2 = session.client("ec2", region_name=region_name)
     res = ec2.describe_instance_types()
-    ret = [_InstanceType(t) for t in res["InstanceTypes"]]
+    ret = [InstanceType(t) for t in res["InstanceTypes"]]
     while "NextToken" in res:
         res = ec2.describe_instance_types(NextToken=res["NextToken"])
-        ret.extend([_InstanceType(t) for t in res["InstanceTypes"]])
+        ret.extend([InstanceType(t) for t in res["InstanceTypes"]])
     return ret

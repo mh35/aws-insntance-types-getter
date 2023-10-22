@@ -4,11 +4,11 @@ from __future__ import annotations
 from boto3.session import Session
 
 
-class _RegionInfo:
+class RegionInfo:
     """Region information."""
 
     def __init__(
-        self: _RegionInfo, name: str, location: str, display_name: str
+        self: RegionInfo, name: str, location: str, display_name: str
     ) -> None:
         """Initialize data.
 
@@ -22,7 +22,7 @@ class _RegionInfo:
         self.display_name = display_name
 
 
-def get_regions(session: Session) -> list[_RegionInfo]:
+def get_regions(session: Session) -> list[RegionInfo]:
     """."""
     ec2 = session.client("ec2")
     ssm = session.client("ssm")
@@ -35,7 +35,7 @@ def get_regions(session: Session) -> list[_RegionInfo]:
         ]
     )
     region_names = [r["RegionName"] for r in regions_res["Regions"]]
-    ret: list[_RegionInfo] = []
+    ret: list[RegionInfo] = []
     for region_name in region_names:
         param_path = (
             "/aws/service/global-infrastructure/regions/" + region_name
@@ -50,5 +50,5 @@ def get_regions(session: Session) -> list[_RegionInfo]:
                 display_name = param["Value"]
         if not location or not display_name:
             continue
-        ret.append(_RegionInfo(region_name, location, display_name))
+        ret.append(RegionInfo(region_name, location, display_name))
     return ret
